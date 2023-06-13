@@ -4,6 +4,7 @@ public class Curso {
     private int codigo;
     private String nome;
 
+    // Constructor
     public Curso(String nome) {
         this.nome = nome;
     }

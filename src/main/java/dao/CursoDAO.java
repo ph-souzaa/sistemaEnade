@@ -2,12 +2,32 @@ package dao;
 
 import model.Curso;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CursoDAO {
     private final Connection conn;
 
+    // Constructor
     public CursoDAO(Connection conn) {
         this.conn = conn;
+    }
+
+    public List<Curso> getAllCursos() throws SQLException {
+        List<Curso> cursos = new ArrayList<>();
+
+        String sql = "SELECT * FROM Curso";
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+                ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                int codigo = rs.getInt("codigo");
+                String nome = rs.getString("nome");
+                Curso curso = new Curso(codigo, nome);
+                cursos.add(curso);
+            }
+        }
+
+        return cursos;
     }
 
     // Create
@@ -18,14 +38,14 @@ public class CursoDAO {
             int affectedRows = stmt.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating course failed, no rows affected.");
+                throw new SQLException("A criacao do curso falhou, nenhuma linha foi afetada.");
             }
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     curso.setCodigo(generatedKeys.getInt(1));
                 } else {
-                    throw new SQLException("Creating course failed, no ID obtained.");
+                    throw new SQLException("A criacao do curso falhou, nenhum ID obtido.");
                 }
             }
         }
@@ -40,7 +60,7 @@ public class CursoDAO {
                 if (rs.next()) {
                     return new Curso(rs.getInt("codigo"), rs.getString("nome"));
                 } else {
-                    throw new SQLException("Course with code " + codigo + " not found.");
+                    throw new SQLException("O curso com o " + codigo + " nao existe.");
                 }
             }
         }

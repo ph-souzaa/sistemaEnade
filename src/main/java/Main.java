@@ -1,35 +1,24 @@
+import javax.swing.SwingUtilities;
 import controller.CursoController;
-import dao.CursoDAO;
-import view.CursoView;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import view.HomeGUI;
+
 import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
-        // Database connection parameters
-        String url = "jdbc:postgresql://containers-us-west-103.railway.app:6478/sistemaenade";
-        String user = "postgres";
-        String password = "3fpFq9V8JdWtbphqLbcS";
+        try {
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
-            // Create DAO
-            CursoDAO cursoDAO = new CursoDAO(conn);
+            final CursoController cursoController = new CursoController();
 
-            // Create controller with DAO
-            CursoController cursoController = new CursoController(cursoDAO);
-
-            // Create view with controller
-            CursoView cursoView = new CursoView(cursoController);
-
-            // Example of usage
-            cursoView.createCurso();
-            cursoView.displayCurso();
-
-            // ... More actions here ...
-
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    new HomeGUI(cursoController);
+                }
+            });
         } catch (SQLException ex) {
-            System.out.println("Error connecting to the database: " + ex.getMessage());
+            System.out.println("Error: " + ex.getMessage());
+            ex.printStackTrace();
         }
+
     }
 }
